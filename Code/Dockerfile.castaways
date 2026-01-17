@@ -1,0 +1,27 @@
+# Dockerfile for Pathway Vector Store Server - In Search of the Castaways
+# Runs server_castaways.py which indexes only the Castaways novel
+
+FROM pathwaycom/pathway:latest
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements first (for Docker layer caching)
+COPY requirements-docker.txt ./
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements-docker.txt
+
+# Copy application code
+COPY servers/server_castaways.py ./servers/
+COPY config/ ./config/
+COPY data/Books/ ./data/Books/
+
+# Set PYTHONPATH to include /app for imports
+ENV PYTHONPATH="/app"
+
+# Expose the vector store API port
+EXPOSE 8765
+
+# Run the Pathway vector store server for Castaways
+CMD ["python", "servers/server_castaways.py"]

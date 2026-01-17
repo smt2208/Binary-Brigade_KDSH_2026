@@ -1,0 +1,27 @@
+# Dockerfile for Pathway Vector Store Server - The Count of Monte Cristo
+# Runs server_monte_cristo.py which indexes only the Monte Cristo novel
+
+FROM pathwaycom/pathway:latest
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements first (for Docker layer caching)
+COPY requirements-docker.txt ./
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements-docker.txt
+
+# Copy application code
+COPY servers/server_monte_cristo.py ./servers/
+COPY config/ ./config/
+COPY data/Books/ ./data/Books/
+
+# Set PYTHONPATH to include /app for imports
+ENV PYTHONPATH="/app"
+
+# Expose the vector store API port
+EXPOSE 8766
+
+# Run the Pathway vector store server for Monte Cristo
+CMD ["python", "servers/server_monte_cristo.py"]

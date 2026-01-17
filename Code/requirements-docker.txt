@@ -1,0 +1,5 @@
+# Requirements for Docker container (Pathway server only)
+# Pathway is pre-installed in the base image
+
+# OpenAI for embeddings
+openai>=1.0.0

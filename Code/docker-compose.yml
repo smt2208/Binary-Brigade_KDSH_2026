@@ -1,0 +1,44 @@
+# Docker Compose for Novel RAG System
+# Run with: docker-compose up --build
+# Two separate vector stores - one per book to avoid mixing character details
+
+services:
+  # Vector store for "In Search of the Castaways" on port 8765
+  pathway-castaways:
+    build:
+      context: .
+      dockerfile: Dockerfile.castaways
+    container_name: novel-rag-castaways
+    ports:
+      - "8765:8765"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./data/Books:/app/data/Books:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8765/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Vector store for "The Count of Monte Cristo" on port 8766
+  pathway-monte-cristo:
+    build:
+      context: .
+      dockerfile: Dockerfile.monte_cristo
+    container_name: novel-rag-monte-cristo
+    ports:
+      - "8766:8766"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./data/Books:/app/data/Books:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8766/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
